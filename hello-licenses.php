@@ -38,7 +38,7 @@ add_action('admin_enqueue_scripts', 'hello_licenses_load_scripts');
 
 function hello_licenses_get_licenses() {
     $licenses = array( 
-        new HelloLicense( 'None', 'No License Assigned.', '', '' ),
+        new HelloLicense( 'None', 'No License Assigned.', null, null ),
         new HelloLicense( 'GPL v2', 'GNU General Public License, version 2.', 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', 'http://www.gnu.org/graphics/heckert_gnu.small.png' ),
         new HelloLicense( 'GPL v3', 'GNU General Public License, version 3.', 'http://www.gnu.org/copyleft/gpl.html', 'http://www.gnu.org/graphics/gplv3-127x51.png' ),
         new HelloLicense( 'MIT', 'The MIT License.', 'http://opensource.org/licenses/MIT', 'http://opensource.org/trademarks/opensource/OSI-Approved-License-100x137.png' )
@@ -83,36 +83,53 @@ function hello_licenses_meta_box_callback( $post ) {
     // Add an nonce field so we can check for it later.
     wp_nonce_field( 'hello_licenses_meta_box', 'hello_licenses_meta_box_nonce' );
 
-    /*
+     /*
      * Use get_post_meta() to retrieve an existing value
-     * from the database and use the value for the form.
+     * from the database and use the value for the License select.
      */
     $value = get_post_meta( $post->ID, '_hello_licenses_id', true );
+    $licenses = hello_licenses_get_licenses();
 
-    echo '<label for="hello_licenses_id">';
+    // Hidden Licenses information for jQuery select change and form submit.
+    $licenses_info = '<div hidden="hidden" id="hello_licenses_info" name="hello_licenses_info">';
+    foreach ( $licenses as $license ) {
+        $licenses_info .= '<div id="hello_licenses_description_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '" name="hello_licenses_description_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '">' . wptexturize( $license->description ) . '</div>';
+        $licenses_info .= '<div id="hello_licenses_url_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '" name="hello_licenses_url_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '">' . wptexturize( $license->url ) . '</div>';
+        $licenses_info .= '<div id="hello_licenses_image_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '" name="hello_licenses_image_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '">' . wptexturize( $license->image ) . '</div>';
+    }
+    $licenses_info .= '</div>';
+    $licenses_info .= '<input type="hidden" id="hello_licenses_description_input" name="hello_licenses_description_input">';
+    $licenses_info .= '<input type="hidden" id="hello_licenses_url_input" name="hello_licenses_url_input">';
+    $licenses_info .= '<input type="hidden" id="hello_licenses_image_input" name="hello_licenses_image_input">';
+    echo $licenses_info;
+
+    // License select.
+    echo '<label for="hello_licenses_id_input">';
     _e( 'License:', 'hello_licenses_textdomain' );
     echo '</label> ';
-    $licenses = hello_licenses_get_licenses();
-    $license_select = '<select id="hello_licenses_id" name="hello_licenses_id">';
+
+    $licenses_select = '<select id="hello_licenses_id_input" name="hello_licenses_id_input">';
     foreach ( $licenses as $license ) {
-        $license_select .= '<option ';
+        $licenses_select .= '<option ';
         if ( $license->id == $value )
-            $license_select .= 'selected="selected" ';
-        $license_select .= 'value="' . esc_attr( $license->id ) . '">' . $license->id . '</option>';
+            $licenses_select .= 'selected="selected" ';
+        $licenses_select .= 'value="' . esc_attr( $license->id ) . '">' . $license->id . '</option>';
     }
-    $license_select .= '</select>';
-    echo $license_select;   
-
-    $license_descriptions = '<div id="hello_licenses_descriptions" name="hello_licenses_descriptions" hidden="hidden">';
-    foreach ( $licenses as $license ) {
-        $license_descriptions .= '<div id="hello_licenses_descriptions_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '" name="hello_licenses_descriptions_' . esc_attr( $license->id ) . '">' . wptexturize( $license->description ) . '</div>';
-    }
-    $license_descriptions .= '</div>';
-    echo $license_descriptions;
-
+    $licenses_select .= '</select>';
+    echo $licenses_select;   
+    
+    // Show selected License information.
     echo '<label for="hello_licenses_description">';
     _e( 'Description:', 'hello_licenses_textdomain' );
-    echo '</label> <textarea type="text" readonly="readonly" id="hello_licenses_description" name="hello_licenses_description"></textarea>';
+    echo '</label> <div id="hello_licenses_description" name="hello_licenses_description"></div>';
+
+    echo '<label for="hello_licenses_url">';
+    _e( 'Website:', 'hello_licenses_textdomain' );
+    echo '</label> <div id="hello_licenses_url" name="hello_licenses_url"></div>';
+
+    echo '<label for="hello_licenses_image">';
+    _e( 'Logo:', 'hello_licenses_textdomain' );
+    echo '</label> <div id="hello_licenses_image" name="hello_licenses_image"></div>';
 }
 
 /**
@@ -158,17 +175,22 @@ function hello_licenses_save_meta_box_data( $post_id ) {
 
     /* OK, it's safe for us to save the data now. */
     
-    // Make sure that it is set.
-    if ( ! isset( $_POST['hello_licenses_id'] ) && ! isset( $_POST['hello_licenses_description'] ) ) {
+    // Make sure that id and description are set.
+    /*if ( ! isset( $_POST['hello_licenses_id_input'] ) && ! isset( $_POST['hello_licenses_description_input'] ) ) {
         return;
-    }
+    }*/
 
     // Sanitize user input.
-    $license_id = sanitize_text_field( $_POST['hello_licenses_id'] );
-    $license_description = sanitize_text_field( $_POST['hello_licenses_description'] );
+    $license_id = sanitize_text_field( $_POST['hello_licenses_id_input'] );
+    $license_description = sanitize_text_field( $_POST['hello_licenses_description_input'] );
+    $license_url = sanitize_text_field( $_POST['hello_licenses_url_input'] );
+    $license_image = sanitize_text_field( $_POST['hello_licenses_image_input'] );
+
     // Update the meta field in the database.
     update_post_meta( $post_id, '_hello_licenses_id', $license_id );
     update_post_meta( $post_id, '_hello_licenses_description', $license_description );
+    update_post_meta( $post_id, '_hello_licenses_url', $license_url );
+    update_post_meta( $post_id, '_hello_licenses_image', $license_image );
 }
 add_action( 'save_post', 'hello_licenses_save_meta_box_data' );
 
