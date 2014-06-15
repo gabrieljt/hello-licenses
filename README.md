@@ -1,4 +1,4 @@
-wordpress-hello-licenses
+hello-licenses
 ========================
 
 This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up for a free world. 
