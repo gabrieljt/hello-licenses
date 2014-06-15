@@ -13,7 +13,7 @@ jQuery( document ).ready(function( $ ) {
         $( "#hello_licenses_url_input" ).val( license_url );
         $( "#hello_licenses_image_input" ).val( license_image );
         $( "#hello_licenses_description" ).html( license_description );
-        $( "#hello_licenses_url" ).hmtl( license_url );
+        $( "#hello_licenses_url" ).html( license_url );
         $( "#hello_licenses_image" ).html( license_image );
     }).change();
 });
