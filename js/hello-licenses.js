@@ -1,7 +1,7 @@
 // Aliasing the jQuery Namespace: http://api.jquery.com/ready/
 
 jQuery( document ).ready(function( $ ) {
-    $( '#hello_licenses_id_input' ).change(function () {
+    var changeHandler = function () {
         var license_id;
         $( 'select option:selected' ).each(function() {
             license_id = $( this ).text().replace( ' ', '' );
@@ -31,5 +31,7 @@ jQuery( document ).ready(function( $ ) {
             $( '#hello_licenses_image' ).hide();
         }
 
-    }).change();
+    }
+
+    $( '#hello_licenses_id_input' ).change(changeHandler).keypress(changeHandler).change();
 });

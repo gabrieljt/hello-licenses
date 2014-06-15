@@ -168,15 +168,15 @@ function hello_licenses_save_meta_box_data( $post_id ) {
     /* OK, it's safe for us to save the data now. */
     
     // Make sure that id and description are set.
-    /*if ( ! isset( $_POST['hello_licenses_id_input'] ) && ! isset( $_POST['hello_licenses_description_input'] ) ) {
+    if ( ! isset( $_POST['hello_licenses_id_input'] ) && ! isset( $_POST['hello_licenses_description_input'] ) ) {
         return;
-    }*/
+    }
 
     // Sanitize user input.
-    $license_id = sanitize_text_field( $_POST['hello_licenses_id_input'] );
-    $license_description = sanitize_text_field( $_POST['hello_licenses_description_input'] );
-    $license_url = sanitize_text_field( $_POST['hello_licenses_url_input'] );
-    $license_image = sanitize_text_field( $_POST['hello_licenses_image_input'] );
+    $license_id             = sanitize_text_field( $_POST['hello_licenses_id_input'] );
+    $license_description    = sanitize_text_field( $_POST['hello_licenses_description_input'] );
+    $license_url            = sanitize_text_field( $_POST['hello_licenses_url_input'] );
+    $license_image          = sanitize_text_field( $_POST['hello_licenses_image_input'] );
 
     // Update the meta field in the database.
     update_post_meta( $post_id, '_hello_licenses_id', $license_id );
