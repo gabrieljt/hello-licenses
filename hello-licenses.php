@@ -39,19 +39,13 @@ add_action('admin_enqueue_scripts', 'hello_licenses_load_scripts');
 function hello_licenses_get_licenses() {
     $licenses = array( 
         new HelloLicense( 'None', 'No License Assigned.', null, null ),
-        new HelloLicense( 'GPL v2', 'GNU General Public License, version 2.', 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', 'http://www.gnu.org/graphics/heckert_gnu.small.png' ),
-        new HelloLicense( 'GPL v3', 'GNU General Public License, version 3.', 'http://www.gnu.org/copyleft/gpl.html', 'http://www.gnu.org/graphics/gplv3-127x51.png' ),
-        new HelloLicense( 'MIT', 'The MIT License.', 'http://opensource.org/licenses/MIT', 'http://opensource.org/trademarks/opensource/OSI-Approved-License-100x137.png' )
+        new HelloLicense( 'GPL v2', 'GNU General Public License, version 2.', 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', plugins_url( 'hello-licenses/images/gplv2.png' , dirname(__FILE__) ) ),
+        new HelloLicense( 'GPL v3', 'GNU General Public License, version 3.', 'http://www.gnu.org/copyleft/gpl.html', plugins_url( 'hello-licenses/images/gplv3.png' , dirname(__FILE__) ) ),
+        new HelloLicense( 'MIT', 'The MIT License.', 'http://opensource.org/licenses/MIT', plugins_url( 'hello-licenses/images/mit.png' , dirname(__FILE__) ) )
     );
 
     return $licenses;
 }
-
-function hello_licenses() {
-    $chosen = hello_licenses_get_licenses();
-    echo "<p id='license'>$chosen</p>";
-}
-//add_action( 'admin_notices', 'hello_license' );
 
 // Post & Page MetaBox 
 /**
@@ -123,13 +117,11 @@ function hello_licenses_meta_box_callback( $post ) {
     _e( 'Description:', 'hello_licenses_textdomain' );
     echo '</label> <div id="hello_licenses_description" name="hello_licenses_description"></div>';
 
-    echo '<label for="hello_licenses_url">';
+    echo '<label id="hello_licenses_url_label" for="hello_licenses_url">';
     _e( 'Website:', 'hello_licenses_textdomain' );
     echo '</label> <div id="hello_licenses_url" name="hello_licenses_url"></div>';
 
-    echo '<label for="hello_licenses_image">';
-    _e( 'Logo:', 'hello_licenses_textdomain' );
-    echo '</label> <div id="hello_licenses_image" name="hello_licenses_image"></div>';
+    echo '<div id="hello_licenses_image" name="hello_licenses_image"></div>';
 }
 
 /**
