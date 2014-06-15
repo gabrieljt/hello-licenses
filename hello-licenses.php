@@ -1,15 +1,15 @@
 <?php
 /**
  * @package Hello_Licenses
- * @version 0.1
+ * @version 1.0
  */
 /*
 Plugin Name: Hello Licenses
 Plugin URI: http://wordpress.org/plugins/hello-licenses/
 Description: This is not just a plugin, it symbolizes the hope and enthusiasm of an entire generation summed up for a free world.
 Author: Rafael Trabasso & Gabriel Trabasso
-Version: 0.1
-Author URI: 
+Version: 1.0
+Author URI: https://github.com/gabrieljt/
 */
 
 class HelloLicense {
