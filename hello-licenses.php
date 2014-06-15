@@ -12,6 +12,20 @@ Version: 0.1
 Author URI: 
 */
 
+class HelloLicense {
+    public $id;
+    public $description;
+    public $url;
+    public $image;
+
+    public function __construct($license_id, $license_description, $license_url, $license_image) {
+        $this->id           = $license_id;
+        $this->description  = $license_description;
+        $this->url          = $license_url;
+        $this->image        = $license_image;
+    }
+}
+
 function hello_licenses_load_scripts($hook) {
  
     if( $hook != 'post.php' && $hook != 'post-new.php' ) 
@@ -24,10 +38,10 @@ add_action('admin_enqueue_scripts', 'hello_licenses_load_scripts');
 
 function hello_licenses_get_licenses() {
     $licenses = array( 
-        'None'      => 'No license assigned', 
-        'GPL'       => 'GNU Public License', 
-        'GPL v2'    => 'GNU Public License version 2', 
-        'MIT'       => 'bla bla bla' 
+        new HelloLicense( 'None', 'No License Assigned.', '', '' ),
+        new HelloLicense( 'GPL v2', 'GNU General Public License, version 2.', 'http://www.gnu.org/licenses/old-licenses/gpl-2.0.html', 'http://www.gnu.org/graphics/heckert_gnu.small.png' ),
+        new HelloLicense( 'GPL v3', 'GNU General Public License, version 3.', 'http://www.gnu.org/copyleft/gpl.html', 'http://www.gnu.org/graphics/gplv3-127x51.png' ),
+        new HelloLicense( 'MIT', 'The MIT License.', 'http://opensource.org/licenses/MIT', 'http://opensource.org/trademarks/opensource/OSI-Approved-License-100x137.png' )
     );
 
     return $licenses;
@@ -80,18 +94,18 @@ function hello_licenses_meta_box_callback( $post ) {
     echo '</label> ';
     $licenses = hello_licenses_get_licenses();
     $license_select = '<select id="hello_licenses_id" name="hello_licenses_id">';
-    foreach ( $licenses as $license => $description ) {
+    foreach ( $licenses as $license ) {
         $license_select .= '<option ';
-        if ( $license == $value )
+        if ( $license->id == $value )
             $license_select .= 'selected="selected" ';
-        $license_select .= 'value="' . esc_attr( $license ) . '">' . $license . '</option>';
+        $license_select .= 'value="' . esc_attr( $license->id ) . '">' . $license->id . '</option>';
     }
     $license_select .= '</select>';
     echo $license_select;   
 
     $license_descriptions = '<div id="hello_licenses_descriptions" name="hello_licenses_descriptions" hidden="hidden">';
-    foreach ( $licenses as $license => $description ) {
-        $license_descriptions .= '<div id="hello_licenses_descriptions_' . esc_attr( str_replace( ' ', '', $license ) ) . '" name="hello_licenses_descriptions_' . esc_attr( $license ) . '">' . wptexturize( $description ) . '</div>';
+    foreach ( $licenses as $license ) {
+        $license_descriptions .= '<div id="hello_licenses_descriptions_' . esc_attr( str_replace( ' ', '', $license->id ) ) . '" name="hello_licenses_descriptions_' . esc_attr( $license->id ) . '">' . wptexturize( $license->description ) . '</div>';
     }
     $license_descriptions .= '</div>';
     echo $license_descriptions;
